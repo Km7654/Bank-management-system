@@ -161,19 +161,23 @@ def withdraw(accntno, amount):
         if int(amount) > bal:
             tk.messagebox.showerror("Error", "Insufficient funds!", parent=servicesScreen)
         else:
-            c.execute("UPDATE accounts SET initAmt=(initAmt - :amount) WHERE account_no=:accntno",
-                      {
-                          'accntno':accntno,
-                          'amount':int(amount)
-                      })
-            c.execute("SELECT initAmt FROM accounts WHERE account_no=:accntno",
-                      {
-                          'accntno':accntno
-                      })
-            bal = c.fetchall()
-            bal = bal[0][0]        
-            conn.commit()
-            tk.messagebox.showinfo("Success", "You have withdrawn ₹ {}\n Updated balance: ₹ {}".format(amount, bal), parent=servicesScreen)
+            if int(amount)<10:
+                tk.messagebox.showerror("Error", "Minimum withdrawal amount is ₹ 10!", parent=servicesScreen)
+                return
+            else:
+                c.execute("UPDATE accounts SET initAmt=(initAmt - :amount) WHERE account_no=:accntno",
+                        {
+                            'accntno':accntno,
+                            'amount':int(amount)
+                        })
+                c.execute("SELECT initAmt FROM accounts WHERE account_no=:accntno",
+                        {
+                            'accntno':accntno
+                        })
+                bal = c.fetchall()
+                bal = bal[0][0]        
+                conn.commit()
+                tk.messagebox.showinfo("Success", "You have withdrawn ₹ {}\n Updated balance: ₹ {}".format(amount, bal), parent=servicesScreen)
     else:
         tk.messagebox.showerror("Error", "Invalid amount entered!", parent=servicesScreen)
         
